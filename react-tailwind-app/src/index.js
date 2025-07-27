@@ -3,13 +3,12 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import Nav from './components/navbar';
-
+import tailwindcss from 'tailwindcss';
+import postcss from 'postcss';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Nav />
     <App />
   </React.StrictMode>
 );
