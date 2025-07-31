@@ -1,58 +1,67 @@
-import { useState } from "react";
+import { useState, useEffect } from "react"
+
+
+
+
 
 export default function App() {
-  const [value, setValue] = useState("");
-  const [Tasks, setTasks] = useState([]);
-
+  const [Produits, setProduit] = useState([]);
+  const [filterValue,setFilterValue]= useState("");
+  useEffect(() => {
+    fetch("https://fakestoreapi.com/products")
+      .then((response) => response.json())
+      .then((data) => setProduit(data))
+      .catch(() => {
+        console.log("Erreur")
+      })
+  }, [])
   function submitForm(e) {
+    if(filterValue == ""){
+      setProduit(Produits)
+    }else{
     e.preventDefault();
-    if (value.trim() !== "") {
-      setTasks([...Tasks, value]);
-      setValue("");
-    }
+    const ProduitFiltrer = Produits.filter((produit) =>
+      produit.title.toLowerCase().includes(filterValue.toLowerCase())
+    );
+    setProduit(ProduitFiltrer);
+  }
   }
 
-  function deleteItem(IndexToDelete) {
-    const NewTaskArray = Tasks.filter((_, index) => index !== IndexToDelete);
-    setTasks(NewTaskArray);
-  }
 
-  return (
-    <>
-      <div className="container mt-5">
-        <div className="card p-4 shadow">
-          <h1 className="text-center mb-4">Todo List</h1>
 
-          <form className="d-flex gap-2" onSubmit={submitForm}>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Add a task..."
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-            />
-            <button type="submit" className="btn btn-primary">
-              Add
-            </button>
-          </form>
-        </div>
-
-        <div className="mt-4">
-          <ul className="list-group">
-            {Tasks.map((task, index) => (
-              <div key={index} className="d-flex align-items-center my-1">
-                <li className="list-group-item flex-grow-1 mb-0">{task}</li>
-                <button
-                  className="btn btn-danger ms-2"
-                  onClick={() => deleteItem(index)}
-                >
-                  Delete
-                </button>
+return (
+    <div className="container mt-4">
+      <form onSubmit={submitForm} >
+      <input
+        type="text"
+        className="form-control mb-4"
+        placeholder="Search products..."
+        value={filterValue}
+        onChange={(e)=>{setFilterValue(e.target.value)}}
+      />
+      <button type="submit" className="btn btn-primary">Filter</button>
+      </form>
+      <div className="row">
+        {Produits.map((product) => (
+          <div key={product.id} className="col-md-4 mb-4">
+            <div className="card h-100">
+              <div className="card-header text-center bg-white">
+                <img
+                  src={product.image}
+                  alt={product.title}
+                  className="img-fluid"
+                  style={{ maxHeight: "200px", objectFit: "contain" }}
+                />
               </div>
-            ))}
-          </ul>
-        </div>
+              <div className="card-body">
+                <h5 className="card-title">{product.title}</h5>
+                <p className="card-text text-muted">${product.price}</p>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
-    </>
+    </div>
   );
+
 }
